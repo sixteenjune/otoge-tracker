@@ -18,7 +18,7 @@ The checked-in `public/data` directory is a local snapshot of OTOGE DB's `music-
 
 English and romaji search aliases live in `public/data/aliases.json`; add stable `game:id` entries there when an upstream title has no searchable English name.
 
-The normalizer intentionally follows the actual schemas: maimai exposes `sort`, `title`, `catcode`, `lev_*`, and `date_added`; CHUNITHM exposes `id`, `catname`, `lev_*`, `version`, and `date_added`; ONGEKI exposes `id`, `category`, `lev_*`, `bells`, and `version`. These datasets generally provide one source-language string rather than separate translation fields, so it is preserved as both Japanese-priority and original text. Japanese source strings are preferred, with a fallback chain of original, English, romaji, and `Unknown`.
+The normalizer intentionally follows the actual schemas: maimai exposes `sort`, `title`, `catcode`, `lev_*`, `dx_lev_*`, `lev_utage`, and `date_added`; CHUNITHM exposes `id`, `catname`, `lev_*`, `lev_we`, `we_kanji`, `we_star`, `version`, and `date_added`; ONGEKI exposes `id`, `category`, `lev_*`, `bells`, and `version`. Special maimai and CHUNITHM records are merged into their matching base song by title and artist, preserving Utage and WORLD'S END as separate chart difficulties. Chart credits are normalized as note designers. These datasets generally provide one source-language string rather than separate translation fields, so it is preserved as both Japanese-priority and original text. Japanese source strings are preferred, with a fallback chain of original, English, romaji, and `Unknown`.
 
 ## GitHub Pages
 

@@ -8,6 +8,44 @@ async function loadAliases(): Promise<AliasMap> {
   return await response.json() as AliasMap;
 }
 
+function isSpecialChart(song: NormalizedSong): boolean {
+  return song.game === "maimai" ? Boolean(song.sourceData.kanji) : song.game === "chunithm" ? Boolean(song.sourceData.we_kanji) : false;
+}
+
+function mergeKey(song: NormalizedSong): string {
+  const title = String(song.sourceData.title || "").replace(/^\[[^\]]+\]\s*/, "").trim().toLocaleLowerCase();
+  const artist = String(song.sourceData.artist || "").trim().toLocaleLowerCase();
+  return `${song.game}:${title}:${artist}:${song.isDeleted ? "deleted" : "current"}`;
+}
+
+function mergeSpecialCharts(records: NormalizedSong[]): NormalizedSong[] {
+  const merged = records.filter(song => !isSpecialChart(song));
+  const specialGroups = new Map<string, NormalizedSong>();
+  for (const special of records.filter(isSpecialChart)) {
+    const existing = specialGroups.get(mergeKey(special));
+    if (!existing) {
+      specialGroups.set(mergeKey(special), special);
+      continue;
+    }
+    const existingCharts = new Set(existing.charts.map(chart => `${chart.difficulty}:${chart.level}:${chart.notes}:${chart.noteDesigner?.ja}`));
+    existing.charts.push(...special.charts.filter(chart => !existingCharts.has(`${chart.difficulty}:${chart.level}:${chart.notes}:${chart.noteDesigner?.ja}`)));
+    existing.addedDate = [...[existing.addedDate, special.addedDate].filter(Boolean)].sort().pop() || existing.addedDate;
+    existing.aliases = [...new Set([...(existing.aliases || []), ...(special.aliases || [])])];
+  }
+  for (const special of specialGroups.values()) {
+    const base = merged.find(song => mergeKey(song) === mergeKey(special));
+    if (!base) {
+      merged.push(special);
+      continue;
+    }
+    const existing = new Set(base.charts.map(chart => `${chart.difficulty}:${chart.level}:${chart.notes}:${chart.noteDesigner?.ja}`));
+    base.charts.push(...special.charts.filter(chart => !existing.has(`${chart.difficulty}:${chart.level}:${chart.notes}:${chart.noteDesigner?.ja}`)));
+    base.addedDate = [...[base.addedDate, special.addedDate].filter(Boolean)].sort().pop() || base.addedDate;
+    base.aliases = [...new Set([...(base.aliases || []), ...(special.aliases || [])])];
+  }
+  return merged;
+}
+
 export async function loadGame(game:Game, aliases?: AliasMap):Promise<NormalizedSong[]> {
   const dataResponses = await Promise.all(files[game].map(async file=>{
       const response=await fetch(`${import.meta.env.BASE_URL}data/${game}/${file}`);
@@ -24,7 +62,7 @@ export async function loadGame(game:Game, aliases?: AliasMap):Promise<Normalized
       if (!existing || (song.isInternational && !existing.isInternational)) songs.set(key,song);
     }
   }
-  return [...songs.values()];
+  return mergeSpecialCharts([...songs.values()]);
 }
 
 export async function loadCatalog(games: Game[]): Promise<Record<Game, NormalizedSong[]>> {

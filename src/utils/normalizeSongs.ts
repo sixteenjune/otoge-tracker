@@ -1,7 +1,10 @@
 import type { Game, LocalizedText, NormalizedChart, NormalizedSong } from "../types";
 const text = (value: unknown): string | undefined => typeof value === "string" && value.trim() ? value.trim() : value != null && String(value).trim() ? String(value).trim() : undefined;
 const num = (value: unknown): number | undefined => { const n = Number(value); return Number.isFinite(n) ? n : undefined; };
-const localized = (value: unknown): LocalizedText => ({ ja: text(value) });
+const localized = (value: unknown): LocalizedText => {
+  const valueText = text(value);
+  return valueText ? { ja: valueText, original: valueText } : {};
+};
 const chart = (raw: Record<string, unknown>, prefix: string, name: string, extra: string[] = []): NormalizedChart | null => {
   const level = text(raw[`lev_${prefix}`]); const notes = num(raw[`lev_${prefix}_notes`]);
   if (!level && notes === undefined) return null;
@@ -17,7 +20,9 @@ export function normalizeSongs(game: Game, rows: unknown[], deleted = false, int
     const charts = prefixes.map(([p,n]) => chart(raw, p, n, game === "ongeki" ? ["bells"] : game === "chunithm" ? ["air","flick"] : ["touch"])).filter((x): x is NormalizedChart => !!x);
     const searchText = JSON.stringify(raw).toLocaleLowerCase();
     const image = text(raw.image_url || raw.image);
-    return { id, game, title, artist, genre, version, releaseDate: text(raw.date_added || raw.release), bpm: num(raw.bpm), jacketUrl: image ? `/data/${game}/jacket/${image}` : undefined, isDeleted: deleted, isInternational: intl || text(raw.intl) === "1", charts, sourceData: raw, searchText };
+    const base = import.meta.env.BASE_URL;
+    const searchable = [title.ja, title.original, title.en, title.romaji, artist?.ja, genre?.ja, version?.ja, ...charts.flatMap(c => [c.difficulty, c.chartDesigner?.ja])].filter(Boolean).join(" ");
+    return { id, game, title, artist, genre, version, releaseDate: text(raw.date_added || raw.release), bpm: num(raw.bpm), jacketUrl: image ? `${base}data/${game}/jacket/${image}` : undefined, isDeleted: deleted, isInternational: intl || text(raw.intl) === "1", charts, sourceData: raw, searchText: `${searchable} ${JSON.stringify(raw)}`.toLocaleLowerCase() };
   });
 }
 export function preferredText(value?: LocalizedText): string { return value?.ja || value?.original || value?.en || value?.romaji || "Unknown"; }

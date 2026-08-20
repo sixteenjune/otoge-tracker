@@ -3,6 +3,5 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
-  base: "/otoge-tracker/",
+  base: process.env.BASE_PATH || "/otoge-tracker/",
 });
-

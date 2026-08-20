@@ -1,0 +1,30 @@
+name: Refresh OTOGE DB snapshot
+
+on:
+  schedule:
+    - cron: "17 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run refresh-data
+      - name: Open refresh pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: "chore: refresh OTOGE DB snapshot"
+          title: "chore: refresh OTOGE DB snapshot"
+          body: "Weekly data refresh from OTOGE DB. Please review the upstream snapshot changes before merging."
+          branch: automation/refresh-otoge-data
+          delete-branch: true

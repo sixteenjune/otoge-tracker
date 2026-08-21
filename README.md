@@ -10,7 +10,7 @@ npm run dev
 npm run build
 ```
 
-The app uses hash routes (`#/maimai`, `#/chunithm`, `#/ongeki`, `#/favorites`, `#/about`) so it works on GitHub Pages without server-side routing. Set `BASE_PATH=/repository-name/ npm run build` when deploying under a project subpath.
+The app uses hash routes (`#/maimai`, `#/chunithm`, `#/ongeki`, `#/favorites`, `#/about`) so it works on GitHub Pages without server-side routing. The build is configured for a root path (`/`) for deployment behind a custom domain; if you deploy under a GitHub Pages project subpath instead (e.g. `username.github.io/repo-name`), set `base` in `vite.config.ts` to `/repo-name/` accordingly.
 
 ## Data refresh
 
@@ -22,7 +22,7 @@ The normalizer intentionally follows the actual schemas: maimai exposes `sort`, 
 
 ## GitHub Pages
 
-Build with `BASE_PATH=/your-repository/ npm run build`, then publish `dist` with any Pages workflow or static hosting action. No backend, credentials, login, or API key is required.
+`npm run build` publishes `dist` for a root path, which is what the `.github/workflows/deploy.yml` Pages workflow deploys on every push to `main`. If you're using a custom domain, add a `CNAME` file with your domain name to `public/` so it's copied into `dist` on build. No backend, credentials, login, or API key is required.
 
 ## Attribution and limitations
 

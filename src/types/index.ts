@@ -1,7 +1,7 @@
 export type Game = "maimai" | "chunithm" | "ongeki";
 export type LocalizedText = { ja?: string; en?: string; romaji?: string; original?: string };
 export type NormalizedChart = {
-  difficulty: string; level?: string; notes?: number; combo?: number;
+  difficulty: string; level?: string; notes?: number;
   holds?: number; slides?: number; breaks?: number; special?: number; noteDesigner?: LocalizedText;
   extraFields?: Record<string, unknown>;
 };

@@ -30,7 +30,6 @@ export function normalizeSongs(game: Game, rows: unknown[], deleted = false, int
       const worldsEnd = chart(raw, "lev_we", `WORLD'S END [${text(raw.we_kanji)}]`, extras, text(raw.we_star) ? `☆${text(raw.we_star)}` : undefined);
       if (worldsEnd) charts.push(worldsEnd);
     }
-    const searchText = JSON.stringify(raw).toLocaleLowerCase();
     const image = text(raw.image_url || raw.image);
     const base = import.meta.env.BASE_URL;
     const searchable = [rawTitle, title.ja, title.original, title.en, title.romaji, text(raw.title_kana), text(raw.title_sort), artist?.ja, genre?.ja, version?.ja, ...charts.flatMap(c => [c.difficulty, c.noteDesigner?.ja])].filter(Boolean).join(" ");

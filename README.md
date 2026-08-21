@@ -29,5 +29,3 @@ The normalizer intentionally follows the actual schemas: maimai exposes `sort`, 
 OTOGE DB's code is MIT licensed; see its [copyright and source notes](https://github.com/zvuc/otoge-db#copyright). OTOGE DB credits SEGA public data and community sources. SEGA and respective rightsholders own the game names, logos, and jacket art. This project keeps the upstream jacket snapshot local for this static fan tool and does not claim ownership; remove or replace those assets if your distribution context does not permit them. Some source records do not include English/romaji, exact release dates, or international flags; these fields are shown as unavailable rather than invented. Favorites are stored only in browser localStorage.
 
 The weekly `Refresh OTOGE DB snapshot` workflow updates the local data and opens a pull request for review. Merging that pull request redeploys the Pages site through the normal deployment workflow.
-
-Design direction: deep navy cabinet-black, hard-edged data panels, technical mono labels, and three game-specific accent palettes make this feel closer to a hand-built music-select screen than a generic dashboard.
